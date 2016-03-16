@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="hoverIntent.js"></script>
+  <!--<script src="https://js.cx/test/libs.js"></script>
+  <script src="test.js"></script>-->
+</head>
+
+<body>
+
+  <div id="elem" class="clock">
+    <span class="hours">12</span> :
+    <span class="minutes">30</span> :
+    <span class="seconds">00</span>
+  </div>
+
+  <div id="tooltip" hidden>Tooltip</div>
+  
+  <script>
+	var elem = document.getElementById ("elem");
+	var hint = new Hint (elem, "111");
+	hint.hide();
+
+	new HoverIntent ({elem: elem, over: showHint, out: hideHint});
+	
+	function showHint () {
+		hint.show();
+	};
+
+    function hideHint () {
+        hint.hide();
+    };
+	
+  </script>
+
+</body>
+</html>
