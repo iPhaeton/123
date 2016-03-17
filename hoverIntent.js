@@ -4,34 +4,74 @@ function HoverIntent(options) {
 	if (options.over) this.overFunction = options.over;
 	if (options.out) this.outFunction = options.out;
 	
-	this.timer = undefined;
+	this._timer = undefined;
+	this._speed = undefined;
+	this._prevCoord = {x: undefined, y: undefined};
+	this._curCoord = {x: undefined, y: undefined};
+    this._prevTime = undefined;
+    this._curTime = undefined;
 	
 	this.elem.addEventListener ("mouseover", this.over(this));
 	this.elem.addEventListener ("mouseout", this.out(this));
+	this.elem.addEventListener ("mousemove", this._trackMouse(this));
 };
 
 HoverIntent.prototype.over = function (self) {
 	return function (event) {
-		var target = event.relatedTarget;
-		while (target) {
-			if (target === self.elem) return;
-			target = target.parentElement;
-		};
-
-		self.timer = setTimeout(self.overFunction, 500);
+		if (!self._checkForLeaving(event)) return;
+		
+		self._prevCoord.x = event.clientX;
+		self._prevCoord.y = event.clientY;
+        self._prevTime = Date.now();
+		
+		self._timer = setInterval(self._execute(event), 100);
 	};
 };
 
 HoverIntent.prototype.out = function (self) {
 	return function (event) {
-		var target = event.relatedTarget;
-		while (target) {
-			if (target === self.elem) return;
-			target = target.parentElement;
-		};
+		if (!self._checkForLeaving(event)) return;
 
-		clearTimeout(self.timer);
+		clearInterval(self._timer);
+
 		self.outFunction ();
+	};
+};
+
+HoverIntent.prototype._checkForLeaving = function (event) {
+	var target = event.relatedTarget;
+	while (target) {
+		if (target === this.elem) return false;
+		target = target.parentElement;
+	};
+	return true;
+};
+
+HoverIntent.prototype._execute = function (event) {
+	var self = this;
+	
+	return function () {
+		self._measureSpeed(event);
+
+		if (self._speed < .01) {
+			self.overFunction();
+			clearInterval(self._timer);
+		};
+	};
+};
+
+HoverIntent.prototype._measureSpeed = function (event) {
+    this._curTime = Date.now();
+	this._speed = Math.sqrt(Math.pow(this._curCoord.x - this._prevCoord.x, 2) + Math.pow(this._curCoord.y - this._prevCoord.y, 2)) / (this._curTime - this._prevTime);
+
+	this._prevCoord.x = this._curCoord.x;
+	this._prevCoord.y = this._curCoord.y;
+};
+
+HoverIntent.prototype._trackMouse = function (self) {
+	return function (event) {
+		self._curCoord.x = event.clientX;
+		self._curCoord.y = event.clientY;
 	};
 };
 //---------------------------------------------------------------------------------------
