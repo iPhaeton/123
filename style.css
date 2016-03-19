@@ -16,6 +16,7 @@
   display: inline-block;
   margin: 30px;
   background: yellow;
+  cursor: default;
 }
 
 .tooltip {

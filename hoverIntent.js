@@ -111,3 +111,45 @@ Hint.prototype.delete = function () {
 	this._hint = undefined;
 };
 //---------------------------------------------------------------------------------------
+
+//Clock
+function Clock (elem) {
+	this._elem = elem;
+	this._timer = undefined;
+
+	this._hours = this._elem.firstElementChild;
+	this._minutes = this._hours.nextElementSibling;
+	this._seconds = this._minutes.nextElementSibling;
+
+	this._set();
+};
+
+Clock.prototype.start = function () {
+	this._timer = setInterval(this._setCall(this), 1000);
+};
+
+Clock.prototype._set = function () {
+	var date = new Date();
+	var hours = date.getHours(),
+		minutes = date.getMinutes(),
+		seconds = date.getSeconds();
+
+	if (hours < 10) hours = "0" + hours;
+	if (minutes < 10) minutes = "0" + minutes;
+	if (seconds < 10) seconds = "0" + seconds;
+
+
+	this._hours.textContent = hours;
+	this._minutes.textContent = minutes;
+	this._seconds.textContent = seconds;
+};
+
+Clock.prototype._setCall = function (self) {
+	return function () {
+		self._set();
+	};
+};
+
+Clock.prototype.stop = function () {
+	clearInterval(this._timer);
+};

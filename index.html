@@ -25,6 +25,9 @@
 	var hint = new Hint (elem, "111");
 	hint.hide();
 
+    var clock = new Clock(elem);
+    clock.start();
+
 	new HoverIntent ({elem: elem, over: showHint, out: hideHint});
 	
 	function showHint () {
